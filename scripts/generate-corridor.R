@@ -228,7 +228,7 @@ save_delineations <- function(x, city_name, river_name) {
 
 # Delineate all corridors
 delineations <- vector("list", length = nrow(cr))
-for (i in 1:nrow(cr)) {
+for (i in 1:length(delineations)) {
   delineations[[i]] <- delineate(cr[i, ]$city_name, cr[i, ]$river_name)
 }
 
