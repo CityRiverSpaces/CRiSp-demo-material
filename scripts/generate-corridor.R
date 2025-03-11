@@ -148,7 +148,7 @@ save_fig <- function(x, bbox, city_name, river_name, label, col, ..., border = c
 delineate <- function(city_name, river_name) {
   # Download datasets and setup
   bbox <- retry(CRiSp::get_osm_bb, city_name)
-  crs <- retry(CRiSp::get_utm_zone, bbox)
+  crs <- CRiSp::get_utm_zone(bbox)
   city_boundary <- retry(CRiSp::get_osm_city_boundary, bbox, city_name,
                          force_download = TRUE) |>
     sf::st_transform(crs)
