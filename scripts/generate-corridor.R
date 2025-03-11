@@ -96,7 +96,7 @@ get_river_surface <- function(bbox, river_centerline, crs,
 get_segments <- function(corridor, network, river_centerline) {
   corridor_buffer <- sf::st_buffer(corridor, 100)
   network_filtered <- filter_network(network, corridor_buffer)
-  CRiSp::get_segments(corridor, network_filtered, river_centerline)
+  CRiSp::delineate_segments(corridor, network_filtered, river_centerline)
 }
 
 
@@ -165,14 +165,14 @@ delineate <- function(city_name, river_name) {
   valley <- CRiSp::get_valley(dem, c(river_centerline, river_surface))
   network <- dplyr::bind_rows(streets, railways) |>
     CRiSp::as_network()
-  corridor <- CRiSp::get_corridor(network, river_centerline, river_surface,
-                                  bbox = sf::st_transform(aoi, crs), dem = dem,
-                                  capping_method = "shortest-path")
+  corridor <- CRiSp::delineate_corridor(network, river_centerline, river_surface,
+                                        bbox = sf::st_transform(aoi, crs), dem = dem,
+                                        capping_method = "shortest-path")
 
   segments <- get_segments(corridor, network, river_centerline)
-  corridor_1 <- CRiSp::get_corridor(network, river_centerline, river_surface,
-                                  bbox = sf::st_transform(aoi, crs), dem = dem,
-                                  capping_method = "shortest-path", max_iterations = 1)
+  corridor_1 <- CRiSp::delineate_corridor(network, river_centerline, river_surface,
+                                          bbox = sf::st_transform(aoi, crs), dem = dem,
+                                          capping_method = "shortest-path", max_iterations = 1)
   segments_1 <- get_segments(corridor, network, river_centerline)
 
   list(
