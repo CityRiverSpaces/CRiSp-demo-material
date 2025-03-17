@@ -151,9 +151,10 @@ delineate <- function(city_name, river_name) {
   # Download datasets and setup
   bbox <- retry(CRiSp::get_osm_bb, city_name)
   crs <- CRiSp::get_utm_zone(bbox)
-  city_boundary <- retry(CRiSp::get_osm_city_boundary, bbox, city_name,
-                         force_download = TRUE) |>
-    sf::st_transform(crs)
+  # city boundary retrieval fails for Sheffield
+  # city_boundary <- retry(CRiSp::get_osm_city_boundary, bbox, city_name,
+  #                        force_download = TRUE) |>
+  #   sf::st_transform(crs)
   river_centerline <- retry(get_river_centerline, bbox, river_name, crs,
                             force_download = TRUE)
   aoi <- get_aoi(bbox, river_centerline, buffer = 2000)
@@ -179,7 +180,7 @@ delineate <- function(city_name, river_name) {
 
   list(
     aoi = aoi,
-    city_boundary = city_boundary,
+    # city_boundary = city_boundary,
     river_centerline = river_centerline,
     river_surface = river_surface,
     streets = streets,
