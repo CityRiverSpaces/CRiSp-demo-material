@@ -1,21 +1,23 @@
 cr <- tibble::tribble(
-  ~city_name, ~river_name,
-  "Bucharest", "Dâmbovița",
-  "Bucharest", "Colentina",
-  "Iaşi",      "Bahlui",
-  "Köln",      "Rhein",
-  "Warsaw",    "Wisła",
-  "Arnhem",    "Nederrijn",
-  "Graz",      "Mur",
-  "Prague",    "Vltava",
-  # "Roma",      "Tevere",  # AOI not split
-  # "Cairo",    "Nile River",  # Segmentation fails
-  # "Madrid",   "Manzanares",  # Corridor delineation fails
-  # "Turin",    "Fiume Po",    # Left corridor edge overflows
-  # "Sheffield, UK", "River Don",  # Error when retrieving river end points
-  # "Miercurea Ciuc", "Olt",  # River on the edge of city returns single segment
-  # "Los Angeles", "Los Angeles River",  # AOI not split
-  # "Ljubljana", "Ljubljanica",  # AOI not split
+  ~city_name,       ~river_name,
+  "Bucharest",      "Dâmbovița",
+  "Bucharest",      "Colentina",
+  "Iaşi",           "Bahlui",
+  "Köln",           "Rhein",
+  "Warsaw",         "Wisła",
+  "Arnhem",         "Nederrijn",
+  "Graz",           "Mur",
+  "Prague",         "Vltava",
+  "Roma",           "Tevere",
+  "Cairo, Egypt",   "Nile River",
+  "Madrid",         "Río Manzanares",
+  "Turin",          "Fiume Po",
+  "Sheffield, UK",  "River Don",
+  "Miercurea Ciuc", "Olt",
+  "Los Angeles",    "Los Angeles River",
+  "Ljubljana",      "Ljubljanica",
+  "Paris",          "La Seine",
+  "Berlin",         "Spree",
 )
 
 
