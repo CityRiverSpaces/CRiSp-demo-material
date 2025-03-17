@@ -1,21 +1,23 @@
 cr <- tibble::tribble(
-  ~city_name, ~river_name,
-  "Bucharest", "Dâmbovița",
-  "Bucharest", "Colentina",
-  "Iaşi",      "Bahlui",
-  "Köln",      "Rhein",
-  "Warsaw",    "Wisła",
-  "Arnhem",    "Nederrijn",
-  "Graz",      "Mur",
-  "Prague",    "Vltava",
-  # "Roma",      "Tevere",  # AOI not split
-  # "Cairo",    "Nile River",  # Segmentation fails
-  # "Madrid",   "Manzanares",  # Corridor delineation fails
-  # "Turin",    "Fiume Po",    # Left corridor edge overflows
-  # "Sheffield, UK", "River Don",  # Error when retrieving river end points
-  # "Miercurea Ciuc", "Olt",  # River on the edge of city returns single segment
-  # "Los Angeles", "Los Angeles River",  # AOI not split
-  # "Ljubljana", "Ljubljanica",  # AOI not split
+  ~city_name,       ~river_name,
+  "Bucharest",      "Dâmbovița",
+  "Bucharest",      "Colentina",
+  "Iaşi",           "Bahlui",
+  "Köln",           "Rhein",
+  "Warsaw",         "Wisła",
+  "Arnhem",         "Nederrijn",
+  "Graz",           "Mur",
+  "Prague",         "Vltava",
+  "Roma",           "Tevere",
+  "Cairo, Egypt",   "Nile River",
+  "Madrid",         "Río Manzanares",
+  "Turin",          "Fiume Po",
+  "Sheffield, UK",  "River Don",
+  "Miercurea Ciuc", "Olt",
+  "Los Angeles",    "Los Angeles River",
+  "Ljubljana",      "Ljubljanica",
+  "Paris",          "La Seine",
+  "Berlin",         "Spree",
 )
 
 
@@ -149,9 +151,10 @@ delineate <- function(city_name, river_name) {
   # Download datasets and setup
   bbox <- retry(CRiSp::get_osm_bb, city_name)
   crs <- CRiSp::get_utm_zone(bbox)
-  city_boundary <- retry(CRiSp::get_osm_city_boundary, bbox, city_name,
-                         force_download = TRUE) |>
-    sf::st_transform(crs)
+  # city boundary retrieval fails for Sheffield
+  # city_boundary <- retry(CRiSp::get_osm_city_boundary, bbox, city_name,
+  #                        force_download = TRUE) |>
+  #   sf::st_transform(crs)
   river_centerline <- retry(get_river_centerline, bbox, river_name, crs,
                             force_download = TRUE)
   aoi <- get_aoi(bbox, river_centerline, buffer = 2000)
@@ -177,7 +180,7 @@ delineate <- function(city_name, river_name) {
 
   list(
     aoi = aoi,
-    city_boundary = city_boundary,
+    # city_boundary = city_boundary,
     river_centerline = river_centerline,
     river_surface = river_surface,
     streets = streets,
