@@ -143,6 +143,6 @@ make_fig <- function(x, city_name, river_name, type,
 }
 
 delineation <- delineate(city_name, river_name)
-save_fig(delineation, city_name, river_name, "valley")
-save_fig(delineation, city_name, river_name, "corridor")
-save_fig(delineation, city_name, river_name, "riverspace")
+make_fig(delineation, city_name, river_name, "valley")
+make_fig(delineation, city_name, river_name, "corridor")
+make_fig(delineation, city_name, river_name, "riverspace")
