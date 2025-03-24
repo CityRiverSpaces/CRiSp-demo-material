@@ -2,63 +2,28 @@ source("scripts/utils.R")
 
 
 cr <- tibble::tribble(
-  ~city_name, ~river_name,
-  "Bucharest", "Dâmbovița",
-  "Bucharest", "Colentina",
-  "Iaşi",      "Bahlui",
-  "Köln",      "Rhein",
-  "Warsaw",    "Wisła",
-  "Arnhem",    "Nederrijn",
-  "Graz",      "Mur",
-  "Prague",    "Vltava",
-  # "Roma",      "Tevere",  # AOI not split
-  # "Cairo",    "Nile River",  # Segmentation fails
-  # "Madrid",   "Manzanares",  # Corridor delineation fails
-  # "Turin",    "Fiume Po",    # Left corridor edge overflows
-  # "Sheffield, UK", "River Don",  # Error when retrieving river end points
-  # "Miercurea Ciuc", "Olt",  # River on the edge of city returns single segment
-  # "Los Angeles", "Los Angeles River",  # AOI not split
-  # "Ljubljana", "Ljubljanica",  # AOI not split
+  ~city_name,       ~river_name,
+  "Bucharest",      "Dâmbovița",
+  "Bucharest",      "Colentina",
+  "Iaşi",           "Bahlui",
+  "Köln",           "Rhein",
+  "Warsaw",         "Wisła",
+  "Arnhem",         "Nederrijn",
+  "Graz",           "Mur",
+  "Prague",         "Vltava",
+  "Roma",           "Tevere",
+  "Cairo, Egypt",   "Nile River",
+  "Madrid",         "Río Manzanares",
+  "Turin",          "Fiume Po",
+  "Sheffield, UK",  "River Don",
+  "Miercurea Ciuc", "Olt",
+  "Los Angeles",    "Los Angeles River",
+  "Ljubljana",      "Ljubljanica",
+  "Paris",          "La Seine",
+  "Berlin",         "Spree",
 )
 
-
-get_river_centerline <- function(bbox, river_name, crs,
-                                 force_download = FALSE) {
-  river_centerline <- CRiSp::osmdata_as_sf("waterway", "river", bbox,
-                                           force_download = force_download)
-  river_centerline <- river_centerline$osm_multilines |>
-    dplyr::filter(.data$name == river_name) |>
-    # the query can return more features than actually intersecting the bb
-    sf::st_filter(sf::st_as_sfc(bbox), .predicate = sf::st_intersects) |>
-    sf::st_geometry() |>
-    sf::st_transform(crs)
-}
-
-
-get_aoi <- function(bbox, river_centerline, buffer) {
-  bbox_repr <- sf::st_transform(bbox, sf::st_crs(river_centerline))
-  river_centerline |>
-    sf::st_crop(bbox_repr) |>
-    sf::st_buffer(buffer, endCapStyle = "FLAT") |>
-    sf::st_transform(4326) |>
-    sf::st_bbox()
-}
-
-
-get_river_surface <- function(bbox, river_centerline, crs,
-                              force_download = FALSE) {
-  river_surface <- CRiSp::osmdata_as_sf("natural", "water", bbox,
-                                        force_download = force_download)
-  dplyr::bind_rows(river_surface$osm_polygons,
-                   river_surface$osm_multipolygons) |>
-    sf::st_geometry() |>
-    sf::st_as_sf() |>
-    sf::st_make_valid() |>
-    sf::st_crop(bbox) |>
-    sf::st_transform(crs) |>
-    sf::st_filter(river_centerline, .predicate = sf::st_intersects) |>
-    sf::st_union()
-}
+buffer_distance <- 3500
 
 
 save_fig <- function(x, bbox, city_name, river_name, label, col, ..., border = col,
@@ -100,35 +65,36 @@ delineate <- function(city_name, river_name) {
   # Download datasets and setup
   bbox <- retry(CRiSp::get_osm_bb, city_name)
   crs <- CRiSp::get_utm_zone(bbox)
-  city_boundary <- retry(CRiSp::get_osm_city_boundary, bbox, city_name,
-                         force_download = TRUE) |>
-    sf::st_transform(crs)
-  river_centerline <- retry(get_river_centerline, bbox, river_name, crs,
-                            force_download = TRUE)
-  aoi <- get_aoi(bbox, river_centerline, buffer = 2000)
-  river_surface <- retry(get_river_surface, aoi, river_centerline, crs,
-                         force_download = TRUE)
+  # city boundary retrieval fails for Sheffield
+  # city_boundary <- retry(CRiSp::get_osm_city_boundary, bbox, city_name,
+  #                        force_download = TRUE) |>
+  #   sf::st_transform(crs)
+  river <- retry(CRiSp::get_osm_river, bbox, river_name, crs = crs)
+  river_centerline <- river$centerline
+  river_surface <- river$surface
+  aoi <- CRiSp::get_river_aoi(river, bbox, buffer_distance = buffer_distance)
   streets <- retry(CRiSp::get_osm_streets, aoi, crs)
   railways <- retry(CRiSp::get_osm_railways, aoi, crs)
-  dem <- CRiSp::get_dem(aoi) |> terra::project(paste0("EPSG:", crs))
+  aoi_dem <- sf::st_buffer(aoi, buffer_distance)
+  dem <- CRiSp::get_dem(aoi_dem, crs = crs)
 
   # Compute valley, spatial network, corridor and segments
   valley <- CRiSp::get_valley(dem, c(river_centerline, river_surface))
   network <- dplyr::bind_rows(streets, railways) |>
     CRiSp::as_network()
   corridor <- CRiSp::delineate_corridor(network, river_centerline, river_surface,
-                                        bbox = sf::st_transform(aoi, crs), dem = dem,
+                                        aoi = sf::st_transform(aoi, crs), dem = dem,
                                         capping_method = "shortest-path")
 
   segments <- get_segments(corridor, network, river_centerline)
-  corridor_1 <- CRiSp::delineate_corridor(network, river_centerline, river_surface,
-                                          bbox = sf::st_transform(aoi, crs), dem = dem,
-                                          capping_method = "shortest-path", max_iterations = 1)
-  segments_1 <- get_segments(corridor, network, river_centerline)
+  # corridor_1 <- CRiSp::delineate_corridor(network, river_centerline, river_surface,
+  #                                         aoi = sf::st_transform(aoi, crs), dem = dem,
+  #                                         capping_method = "shortest-path", max_iterations = 1)
+  # segments_1 <- get_segments(corridor, network, river_centerline)
 
   list(
     aoi = aoi,
-    city_boundary = city_boundary,
+    # city_boundary = city_boundary,
     river_centerline = river_centerline,
     river_surface = river_surface,
     streets = streets,
@@ -137,9 +103,9 @@ delineate <- function(city_name, river_name) {
     valley = valley,
     network = network,
     corridor = corridor,
-    segments = segments,
-    corridor_1 = corridor_1,
-    segments_1 = segments_1
+    segments = segments # ,
+    # corridor_1 = corridor_1,
+    # segments_1 = segments_1
   )
 }
 
@@ -158,20 +124,21 @@ plot_delineations <- function(x) {
 }
 
 save_delineations <- function(x, city_name, river_name) {
+  bbox <- sf::st_bbox(x$aoi)
   c(x$river_centerline, x$river_surface) |>
-    save_fig(x$aoi, city_name, river_name, "river", col = "#2e809e",
+    save_fig(bbox, city_name, river_name, "river", col = "#2e809e",
              main = paste0(city_name, ", ", river_name))
   sf::st_as_sf(x$network, "edges") |>
-    save_fig(x$aoi, city_name, river_name, "network", col = "black", lwd = 0.5,
+    save_fig(bbox, city_name, river_name, "network", col = "black", lwd = 0.5,
              main = paste0(city_name, ", ", river_name))
-  save_fig(x$dem, x$aoi, city_name, river_name, "dem",
+  save_fig(x$dem, bbox, city_name, river_name, "dem",
            main = paste0(city_name, ", ", river_name))
-  save_fig(x$valley, x$aoi, city_name, river_name, "valley", col = "gold",
+  save_fig(x$valley, bbox, city_name, river_name, "valley", col = "gold",
            main = paste0(city_name, ", ", river_name))
-  save_fig(x$corridor, x$aoi, city_name, river_name, "corridor",
+  save_fig(x$corridor, bbox, city_name, river_name, "corridor",
            border = "orange", col = NA, lwd = 2,
            main = paste0(city_name, ", ", river_name))
-  save_fig(x$segments, x$aoi, city_name, river_name, "segments",
+  save_fig(x$segments, bbox, city_name, river_name, "segments",
            border = "orange", col = NA,
            main = paste0(city_name, ", ", river_name))
 }
