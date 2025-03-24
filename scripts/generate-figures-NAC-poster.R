@@ -41,7 +41,7 @@ retry <- function(func, ..., max_retries = 5, delay = 2) {
 
 get_segments <- function(corridor, network, river_centerline) {
   corridor_buffer <- sf::st_buffer(corridor, 100)
-  network_filtered <- filter_network(network, corridor_buffer)
+  network_filtered <- CRiSp:::filter_network(network, corridor_buffer)
   CRiSp::delineate_segments(corridor, network_filtered, river_centerline)
 }
 
