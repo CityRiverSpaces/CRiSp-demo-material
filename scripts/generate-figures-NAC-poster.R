@@ -75,7 +75,7 @@ delineate <- function(city_name, river_name) {
     dem = dem, capping_method = "shortest-path"
   )
   segments <- get_segments(corridor, network, river_centerline)
-  riverspace <- delineate_riverspace(buildings, river_surface)
+  riverspace <- CRiSp::delineate_riverspace(buildings, river_surface)
 
   list(
     river_centerline = river_centerline,
