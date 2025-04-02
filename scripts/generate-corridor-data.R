@@ -3,42 +3,41 @@ library(CRiSp)
 
 # nolint start
 city_river_names <- tibble::tribble(
-  ~city_name,       ~river_name,          ~network_buffer, ~buildings_buffer, ~dem_buffer,
-  "Bucharest",      "Dâmbovița",           2500,             100,              2500,
-  "Bucharest",      "Colentina",           2500,             100,              2500,
-  "Iaşi",           "Bahlui",              2500,             100,              2500,
-  "Köln",           "Rhein",               2500,             100,              2500,
-  "Warsaw",         "Wisła",               2500,             100,              2500,
-  "Arnhem",         "Nederrijn",           2500,             100,              2500,
-  "Graz",           "Mur",                 2500,             100,              2500,
-  "Prague",         "Vltava",              2500,             100,              2500,
-  "Roma",           "Tevere",              3500,             100,              3500,
-  "Cairo, Egypt",   "Nile River",          2500,             100,              2500,
-  "Madrid",         "Río Manzanares",      2500,             100,              2500,
-  "Turin",          "Fiume Po",            2500,             100,              2500,
-  "Sheffield, UK",  "River Don",           2500,             100,              2500,
-  "Miercurea Ciuc", "Olt",                 2500,             100,              2500,
-  "Los Angeles",    "Los Angeles River",   2500,             100,              2500,
-  "Ljubljana",      "Ljubljanica",         2500,             100,              2500,
-  "Paris",          "La Seine",            2500,             100,              2500,
-  "Berlin",         "Spree",               2500,             100,              2500,
-  "Dresden",        "Elbe",                2500,             100,              2500, # memory error
-  "London",         "River Lea",           2500,             100,              2500,
-  "Bratislava",     "Danube",              2500,             100,              2500,
-  "Turin",          "Fiume Po",            2500,             100,              2500,
-  "Calarasi",       "Dunare",              2500,             100,              2500,
-  "Bristol",        "River Avon",          2500,             100,              2500,
-  "Dresden",        "Geberbach",           2500,             100,              2500,
-  "Rotterdam",      "Rotte",               2500,             100,              2500,
-  "Leiden",         "Rijn",                2500,             100,              2500,
-  "Delft",          "Schie",               2500,             100,              2500,
-
+  ~city_name,       ~river_name,          ~network_buffer,  ~dem_buffer,
+  "Bucharest",      "Dâmbovița",           2500,             2500,
+  "Bucharest",      "Colentina",           2500,             2500,
+  "Iaşi",           "Bahlui",              2500,             2500,
+  "Köln",           "Rhein",               2500,             2500,
+  "Warsaw",         "Wisła",               2500,             2500,
+  "Arnhem",         "Nederrijn",           2500,             2500,
+  "Graz",           "Mur",                 2500,             2500,
+  "Prague",         "Vltava",              2500,             2500,
+  "Roma",           "Tevere",              3500,             3500,
+  "Cairo, Egypt",   "Nile River",          2500,             2500,
+  "Madrid",         "Río Manzanares",      2500,             2500,
+  "Turin",          "Fiume Po",            2500,             2500,
+  "Sheffield, UK",  "River Don",           2500,             2500,
+  "Miercurea Ciuc", "Olt",                 2500,             2500,
+  "Los Angeles",    "Los Angeles River",   2500,             2500,
+  "Ljubljana",      "Ljubljanica",         2500,             2500,
+  "Paris",          "La Seine",            2500,             2500,
+  "Berlin",         "Spree",               2500,             2500,
+  "Dresden",        "Elbe",                2500,             2500, # memory error
+  "London",         "River Lea",           2500,             2500,
+  "Bratislava",     "Danube",              2500,             2500,
+  "Turin",          "Fiume Po",            2500,             2500,
+  "Calarasi",       "Dunare",              2500,             2500,
+  "Bristol",        "River Avon",          2500,             2500,
+  "Dresden",        "Geberbach",           2500,             2500,
+  "Rotterdam",      "Rotte",               2500,             2500,
+  "Leiden",         "Rijn",                2500,             2500,
+  "Delft",          "Schie",               2500,             2500,
 )
 # nolint end
 
 
 get_delineate_layers <- function(
-  city_name, river_name, network_buffer, buildings_buffer,
+  city_name, river_name, network_buffer,
   dem_buffer, force_download = FALSE
 ) {
   # Download OSM datasets
@@ -46,7 +45,7 @@ get_delineate_layers <- function(
   crs <- CRiSp::get_utm_zone(bb)
   osm_data <- CRiSp::get_osmdata(
     city_name, river_name, network_buffer = network_buffer,
-    buildings_buffer = buildings_buffer, crs = crs,
+    buildings_buffer = NULL, crs = crs,
     force_download = force_download
   )
 
@@ -118,7 +117,6 @@ plot_delineations <- function(x, setup) {
   )
   subtitle_text <- paste0(
     "Network Buffer: ", setup$network_buffer, "m, ",
-    "Buildings Buffer: ", setup$buildings_buffer, "m, ",
     "DEM Buffer: ", setup$dem_buffer, "m"
   )
   title(main = title_text, sub = subtitle_text, cex.main = 1.5, cex.sub = 0.5)
@@ -222,7 +220,6 @@ for (i in seq_along(delineations)) {
       setup$city_name,
       setup$river_name,
       setup$network_buffer,
-      setup$buildings_buffer,
       setup$dem_buffer,
       force_download = FALSE
     )
