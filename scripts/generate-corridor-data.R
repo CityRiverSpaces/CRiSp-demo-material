@@ -16,8 +16,8 @@ city_river_names <- tibble::tribble(
   "Cairo, Egypt",   "Nile River",          2500,             2500,
   "Madrid",         "Río Manzanares",      2500,             2500,
   "Turin",          "Fiume Po",            2500,             2500,
-  "Sheffield, UK",  "River Don",           2500,             2500,
-  "Miercurea Ciuc", "Olt",                 2500,             2500,
+  "Sheffield, UK",  "River Don",           2500,             2500,  # No city boundary found. name may be incorrect
+  "Miercurea Ciuc", "Olt",                 2500,             2500,  # Cannot identify corridor edges
   "Los Angeles",    "Los Angeles River",   2500,             2500,
   "Ljubljana",      "Ljubljanica",         2500,             2500,
   "Paris",          "La Seine",            2500,             2500,
@@ -25,13 +25,12 @@ city_river_names <- tibble::tribble(
   "Dresden",        "Elbe",                2500,             2500,
   "London",         "River Lea",           2500,             2500,
   "Bratislava",     "Danube",              2500,             2500,
-  "Turin",          "Fiume Po",            2500,             2500,
-  "Calarasi",       "Dunare",              2500,             2500,
+  "Calarasi",       "Dunare",              2500,             2500, # error in railway function
   "Bristol",        "River Avon",          2500,             2500,
-  "Dresden",        "Geberbach",           2500,             2500,
-  "Rotterdam",      "Rotte",               2500,             2500,
+  "Dresden",        "Geberbach",           2500,             2500, # error in railway function
+  "Rotterdam",      "Rotte",               2500,             2500, # No city boundary found. name may be incorrect.
   "Leiden",         "Rijn",                2500,             2500,
-  "Delft",          "Schie",               2500,             2500,
+  "Delft",          "Schie",               2500,             2500, # error in railway function
 )
 # nolint end
 
