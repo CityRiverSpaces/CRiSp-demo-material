@@ -22,7 +22,7 @@ city_river_names <- tibble::tribble(
   "Ljubljana",      "Ljubljanica",         2500,             2500,
   "Paris",          "La Seine",            2500,             2500,
   "Berlin",         "Spree",               2500,             2500,
-  "Dresden",        "Elbe",                2500,             2500, # memory error
+  "Dresden",        "Elbe",                2500,             2500,
   "London",         "River Lea",           2500,             2500,
   "Bratislava",     "Danube",              2500,             2500,
   "Turin",          "Fiume Po",            2500,             2500,
@@ -198,17 +198,7 @@ save_dem <- function(dem, setup) {
 }
 
 # Delineate all corridors
-# if delineations variable does not exist, create it
-if (!exists("delineations")) {
-  delineations <- vector("list", length = nrow(city_river_names))
-} else {
-  # if delineations variable exists, check if nrows match
-  if (length(delineations) != nrow(city_river_names)) {
-    stop(
-      "delineations variable exists, but city_river_names has different length!"
-    )
-  }
-}
+delineations <- vector("list", length = nrow(city_river_names))
 
 for (i in seq_along(delineations)) {
   setup <- city_river_names[i, ]
