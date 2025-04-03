@@ -16,7 +16,7 @@ city_river_names <- tibble::tribble(
   "Cairo, Egypt",   "Nile River",          2500,             2500,
   "Madrid",         "Río Manzanares",      2500,             2500,
   "Turin",          "Fiume Po",            2500,             2500,
-  "Sheffield, UK",  "River Don",           2500,             2500,  # No city boundary found. name may be incorrect
+  "Sheffield, UK",  "River Don",           2500,             2500,  # city name may be incorrect
   "Miercurea Ciuc", "Olt",                 2500,             2500,  # Cannot identify corridor edges
   "Los Angeles",    "Los Angeles River",   2500,             2500,
   "Ljubljana",      "Ljubljanica",         2500,             2500,
@@ -25,12 +25,21 @@ city_river_names <- tibble::tribble(
   "Dresden",        "Elbe",                2500,             2500,
   "London",         "River Lea",           2500,             2500,
   "Bratislava",     "Danube",              2500,             2500,
-  "Calarasi",       "Dunare",              2500,             2500, # error in railway function
+  "Călărași",       "Dunărea",             2500,             2500, # error: several DEM found: File name too long
   "Bristol",        "River Avon",          2500,             2500,
-  "Dresden",        "Geberbach",           2500,             2500, # error in railway function
-  "Rotterdam",      "Rotte",               2500,             2500, # No city boundary found. name may be incorrect.
+  "Dresden",        "Geberbach",           2500,             2500, # river name may be incorrect: Elbe?!
+  "Rotterdam",      "Rotte",               2500,             2500, # city name may be incorrect.
   "Leiden",         "Rijn",                2500,             2500,
-  "Delft",          "Schie",               2500,             2500, # error in railway function
+  "Delft",          "Schie",               2500,             2500, # Error in UseMethod("filter")
+  "İzmir",          "Meles Çayı",         2500,              2500, # DEM and river geometry should be in the same CRS
+  "Biella",         "Cervo",               2500,             2500,
+  "Altamira, Pará", "Rio Xingu",           2500,             2500, # Error in UseMethod("select"): applied to an object of class "NULL"
+  "Cần Thơ",        "Sông Hậu",            2500,             2500, # Error in UseMethod("select"): applied to an object of class "NULL"
+  "Rotterdam",      "Nieuwe Maas",         2500,             2500, # city name may be incorrect.
+  "Melbourne",      "Moonee Ponds Creek",  2500,             2500, # river name may be incorrect
+  "Zaandam",        "Zaan",                2500,             2500, # Error in UseMethod("filter")
+  "Senica",         "Teplica",             2500,             2500, # DEM and river geometry should be in the same CRS
+  "Roermond",       "Roer",                2500,             2500,
 )
 # nolint end
 
