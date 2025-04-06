@@ -5,7 +5,7 @@ library(CRiSp)
 city_river_names <- tibble::tribble(
   ~city_name,       ~river_name,          ~network_buffer,  ~dem_buffer,
   "Bucharest",      "Dâmbovița",           2500,             2500,
-  "Bucharest",      "Colentina",           2500,             2500,
+  "Bucharest",      "Colentina",           3500,             2500,
   "Iaşi",           "Bahlui",              2500,             2500,
   "Köln",           "Rhein",               2500,             2500,
   "Warsaw",         "Wisła",               2500,             2500,
@@ -16,8 +16,8 @@ city_river_names <- tibble::tribble(
   "Cairo, Egypt",   "Nile River",          2500,             2500,
   "Madrid",         "Río Manzanares",      2500,             2500,
   "Turin",          "Fiume Po",            2500,             2500,
-  "Sheffield, UK",  "River Don",           2500,             2500,  # city name may be incorrect
-  "Miercurea Ciuc", "Olt",                 2500,             2500,  # Cannot identify corridor edges
+  "Sheffield, UK",  "River Don",           2500,             2500,
+  # "Miercurea Ciuc", "Olt",                 2500,             2500,  # Cannot identify corridor edges
   "Los Angeles",    "Los Angeles River",   2500,             2500,
   "Ljubljana",      "Ljubljanica",         2500,             2500,
   "Paris",          "La Seine",            2500,             2500,
@@ -25,21 +25,23 @@ city_river_names <- tibble::tribble(
   "Dresden",        "Elbe",                2500,             2500,
   "London",         "River Lea",           2500,             2500,
   "Bratislava",     "Danube",              2500,             2500,
-  "Călărași",       "Dunărea",             2500,             2500, # error: several DEM found: File name too long
+  # "Călărași",       "Dunărea",             2500,             2500, # error: several DEM found: File name too long
   "Bristol",        "River Avon",          2500,             2500,
-  "Dresden",        "Geberbach",           2500,             2500, # river name may be incorrect: Elbe?!
-  "Rotterdam",      "Rotte",               2500,             2500, # city name may be incorrect.
-  "Leiden",         "Rijn",                2500,             2500,
-  "Delft",          "Schie",               2500,             2500, # Error in UseMethod("filter")
-  "İzmir",          "Meles Çayı",         2500,              2500, # DEM and river geometry should be in the same CRS
+  # "Dresden",        "Geberbach",           2500,             2500, # river name may be incorrect
+  "Rotterdam",      "Rotte",               2500,             2500,
+  # "Leiden",         "Rijn",                2500,             2500, # river name may be incorrect
+  # "Delft",          "Schie",               2500,             2500, # Error in UseMethod("filter")
+  "İzmir",          "Meles Çayı",          2500,              2500,
   "Biella",         "Cervo",               2500,             2500,
-  "Altamira, Pará", "Rio Xingu",           2500,             2500, # Error in UseMethod("select"): applied to an object of class "NULL"
-  "Cần Thơ",        "Sông Hậu",            2500,             2500, # Error in UseMethod("select"): applied to an object of class "NULL"
-  "Rotterdam",      "Nieuwe Maas",         2500,             2500, # city name may be incorrect.
-  "Melbourne",      "Moonee Ponds Creek",  2500,             2500, # river name may be incorrect
-  "Zaandam",        "Zaan",                2500,             2500, # Error in UseMethod("filter")
-  "Senica",         "Teplica",             2500,             2500, # DEM and river geometry should be in the same CRS
+  # "Altamira, Pará", "Rio Xingu",           2500,             2500, # Error in UseMethod("select"): applied to an object of class "NULL"
+  # "Cần Thơ",        "Sông Hậu",            2500,             2500, # Error in UseMethod("select"): applied to an object of class "NULL"
+  "Rotterdam",      "Nieuwe Maas",         2500,             2500,
+  # "Melbourne",      "Moonee Ponds Creek",  2500,             2500, # river name may be incorrect
+  # "Zaandam",        "Zaan",                2500,             2500, # Error in UseMethod("filter")
+  "Senica",         "Teplica",             2500,             2500,
   "Roermond",       "Roer",                2500,             2500,
+  # "Rio de Janeiro", "Rio Guandu",        2500,             2500, # river name may be incorrect
+  # "Dresden",        "Kaitzbach",           2500,             2500, # river name may be incorrect
 )
 # nolint end
 
