@@ -63,31 +63,35 @@ save_fig <- function(x, bbox, city_name, river_name, label, col, ..., border = c
 
 delineate <- function(city_name, river_name) {
   # Download datasets and setup
-  bbox <- retry(CRiSp::get_osm_bb, city_name)
-  crs <- CRiSp::get_utm_zone(bbox)
+  bbox <- retry(rcrisp::get_osm_bb, city_name)
+  crs <- rcrisp::get_utm_zone(bbox)
   # city boundary retrieval fails for Sheffield
-  # city_boundary <- retry(CRiSp::get_osm_city_boundary, bbox, city_name,
+  # city_boundary <- retry(rcrisp::get_osm_city_boundary, bbox, city_name,
   #                        force_download = TRUE) |>
   #   sf::st_transform(crs)
-  river <- retry(CRiSp::get_osm_river, bbox, river_name, crs = crs)
+  river <- retry(rcrisp::get_osm_river, bbox, river_name, crs = crs)
   river_centerline <- river$centerline
   river_surface <- river$surface
-  aoi <- CRiSp::get_river_aoi(river, bbox, buffer_distance = buffer_distance)
-  streets <- retry(CRiSp::get_osm_streets, aoi, crs)
-  railways <- retry(CRiSp::get_osm_railways, aoi, crs)
+  aoi <- rcrisp::get_river_aoi(river, bbox, buffer_distance = buffer_distance)
+  streets <- retry(rcrisp::get_osm_streets,
+                   bbox |>
+                     sf::st_as_sfc() |>
+                     sf::st_transform(crs) |>
+                     sf::st_buffer(3000) |>
+                     sf::st_transform(sf::st_crs(bbox)),
+                   crs)
+  railways <- retry(rcrisp::get_osm_railways, aoi, crs)
   aoi_dem <- sf::st_buffer(aoi, buffer_distance)
-  dem <- CRiSp::get_dem(aoi_dem, crs = crs)
+  dem <- rcrisp::get_dem(aoi_dem, crs = crs)
 
   # Compute valley, spatial network, corridor and segments
-  valley <- CRiSp::get_valley(dem, c(river_centerline, river_surface))
+  valley <- rcrisp::delineate_valley(dem, c(river_centerline, river_surface))
   network <- dplyr::bind_rows(streets, railways) |>
-    CRiSp::as_network()
-  corridor <- CRiSp::delineate_corridor(network, river_centerline, river_surface,
-                                        aoi = sf::st_transform(aoi, crs), dem = dem,
-                                        capping_method = "shortest-path")
+    rcrisp::as_network()
+  corridor <- rcrisp::delineate_corridor(network, river_centerline, corridor_init = valley)
 
   segments <- get_segments(corridor, network, river_centerline)
-  # corridor_1 <- CRiSp::delineate_corridor(network, river_centerline, river_surface,
+  # corridor_1 <- rcrisp::delineate_corridor(network, river_centerline, river_surface,
   #                                         aoi = sf::st_transform(aoi, crs), dem = dem,
   #                                         capping_method = "shortest-path", max_iterations = 1)
   # segments_1 <- get_segments(corridor, network, river_centerline)
