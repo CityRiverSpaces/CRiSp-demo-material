@@ -88,7 +88,7 @@ delineate <- function(city_name, river_name) {
   valley <- rcrisp::delineate_valley(dem, c(river_centerline, river_surface))
   network <- dplyr::bind_rows(streets, railways) |>
     rcrisp::as_network()
-  corridor <- rcrisp::delineate_corridor(network, river_centerline, dem = dem)
+  corridor <- rcrisp::delineate_corridor(network, river_centerline, corridor_init = valley)
 
   segments <- get_segments(corridor, network, river_centerline)
   # corridor_1 <- rcrisp::delineate_corridor(network, river_centerline, river_surface,
